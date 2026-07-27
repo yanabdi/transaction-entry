@@ -29,3 +29,5 @@ Application that interacts with a google spreadsheet for easy transaction record
     - AI recommendation of sorts
     - API interaction with actual banking apps?
     - Ship as an application
+
+!!! TESTING RULESET
