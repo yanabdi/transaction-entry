@@ -1,10 +1,10 @@
 export interface TransactionRecord {
-    id: string; //for data management
+    id: string; 
     date: TransactionDate;
     category: string;
     amount: number;
     name: string;
-    vendor: string; //to say where you spent the money
+    vendor: string; 
     desc: string;
     notes: string;
 }
