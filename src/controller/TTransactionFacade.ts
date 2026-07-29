@@ -1,4 +1,4 @@
-import { TransactionRecord } from "../model/TransactionRecord";
+import { TransactionRecord } from "../model/TransactionRecord.js";
 
 export interface TTransaactionFacade {
     /**
@@ -24,5 +24,5 @@ export interface TTransaactionFacade {
      * an id is valid only if is within the range of 8-digit numbers [00000001, 99999999]
      */
     removeTransaction(id: number): Promise<string>;
-    listTransactions();
+    listTransactions(): void;
 }
