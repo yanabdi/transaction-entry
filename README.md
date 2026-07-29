@@ -34,3 +34,4 @@ Application that interacts with a google spreadsheet for easy transaction record
 1. Open terminal
 2. Run 'npm install --save-dev typescript'
 3. Run 'npx tsc ./src/App.ts'
+4. Run 'node ./src/app.js'
