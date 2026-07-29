@@ -1,11 +1,10 @@
 import express from "express";
+import path from "node:path";
 
 const app = express();
 const PORT = 4000;
 
-app.get("/", (req, res) => {
-    res.send("App Starting...");
-});
+app.use(express.static(path.join(import.meta.dirname, "../frontend/public")));
 
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);

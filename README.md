@@ -34,5 +34,5 @@ Application that interacts with a google spreadsheet for easy transaction record
 1. Open terminal
 2. Run 'npm install'
 3. Run 'npm run build'
-4. Run 'npm run start'
+4. Run 'npm start'
 5. View locally hosted website at http://localhost:4000
