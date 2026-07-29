@@ -29,6 +29,7 @@ Application that interacts with a google spreadsheet for easy transaction record
     - AI recommendation of sorts
     - API interaction with actual banking apps?
     - Ship as an application
+    - SQL database eventually?
 
 ## Instructions
 1. Open terminal
