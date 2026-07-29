@@ -29,3 +29,8 @@ Application that interacts with a google spreadsheet for easy transaction record
     - AI recommendation of sorts
     - API interaction with actual banking apps?
     - Ship as an application
+
+## Instructions
+1. Open terminal
+2. Run 'npm install --save-dev typescript'
+3. Run 'npx tsc ./src/App.ts'
