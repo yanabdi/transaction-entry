@@ -1,6 +1,6 @@
 import { TransactionRecord } from "../model/TransactionRecord.js";
 
-export interface TTransaactionFacade {
+export interface TTransactionFacade {
     /**
      * Add a transaction to the application's map
      * 
@@ -9,7 +9,7 @@ export interface TTransaactionFacade {
      * 
      * a valid id is an 8-digit number representing a date in the range [00000001, 99999999]
     */
-    addTransaction(id: number, transaction: TransactionRecord): Promise<Map<number, TransactionRecord>>;
+    addTransaction(id: number, transaction: TransactionRecord): Promise<TransactionRecord>;
 
     /**
      * Removes a transaction from the list
