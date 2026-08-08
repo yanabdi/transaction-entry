@@ -1,7 +1,7 @@
 # Transaction Entry
 
 ## Details
-Date: 25/7/2026  
+Start date: 25/7/2026  
 Authors: 
 - Yan Abdi
 - Sean Sun
