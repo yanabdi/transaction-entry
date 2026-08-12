@@ -1,7 +1,7 @@
 import { TransactionRecord } from "../model/TransactionRecord.js";
 import { TTransactionFacade } from "./TTransactionFacade.js";
 
-export default class TransactionFacade implements TTransactionFacade {
+export class TransactionFacade implements TTransactionFacade {
     private transactions: Map<number, Array<TransactionRecord>> = new Map();
 
     public async addTransaction(id: number, transaction: TransactionRecord): Promise<TransactionRecord> {
@@ -59,8 +59,12 @@ export default class TransactionFacade implements TTransactionFacade {
         return `Unsuccessful deletion. Transaction entry: ${entry} not found.`;
     }
 
-    listTransactions(): TransactionRecord[][] {
+    public listTransactions(): TransactionRecord[][] {
         return Array.from(this.transactions.values());
+    }
+
+    public listMap(): Map<number, Array<TransactionRecord>> {
+        return this.transactions;
     }
 }
 
