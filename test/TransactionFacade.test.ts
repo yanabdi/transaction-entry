@@ -1,6 +1,6 @@
 import {beforeAll, beforeEach, it, describe, expect} from "vitest";
-import { TransactionRecord } from "../src/model/TransactionRecord";
-import { TransactionFacade } from "../src/controller/TransactionFacade";
+import { TransactionRecord } from "../src/model/TransactionRecord.ts";
+import { TransactionFacade } from "../src/controller/TransactionFacade.ts";
 
 describe("addTransaction", () => {
     let transaction: TransactionRecord;
@@ -39,6 +39,6 @@ describe("addTransaction", () => {
         expect(day).toBeDefined();
         expect(day).toBeInstanceOf(Array);
         expect(day).toHaveLength(1);
-        expect(day?.at(0)).toEqual(transaction);
+        expect(day?.[0]).toEqual(transaction);
     });
 });

@@ -1,5 +1,7 @@
 import express from "express";
 import path from "node:path";
+import { TransactionRecord } from "../src/model/TransactionRecord.js";
+import { transactionFacade } from "../src/controller/TransactionFacade.js";
 
 const app = express();
 const PORT = 4000;
@@ -8,4 +10,28 @@ app.use(express.static(path.join(import.meta.dirname, "../src/frontend/public"))
 
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
+});
+
+//add transactions
+app.post("/transactions/:id", async (req, res) => {
+    try {
+        const transaction: TransactionRecord = {
+            entry: 0, // TransactionFacade will assign this
+            date: req.body.date,
+            category: req.body.category,
+            amount: req.body.amount,
+            name: req.body.name,
+            vendor: req.body.vendor,
+            desc: req.body.desc,
+            notes: req.body.notes
+        };
+        const result = await transactionFacade.addTransaction(
+            Number(req.params.id),
+            transaction
+        );
+
+        res.json(result);
+    } catch (error) {
+        res.status(400).json({ error: String(error) });
+    }
 });
