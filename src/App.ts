@@ -16,9 +16,10 @@ app.listen(PORT, () => {
 //this is the routing for it, not the function. it can't be seen through user interface as of yet.
 app.post("/transactions/:id", async (req, res) => {
     try {
+        let reqDate = req.body.date;
         const transaction: TransactionRecord = {
             entry: 0, // TransactionFacade will assign this
-            date: req.body.date,
+            date: reqDate,
             category: req.body.category,
             amount: req.body.amount,
             name: req.body.name,
@@ -27,7 +28,7 @@ app.post("/transactions/:id", async (req, res) => {
             notes: req.body.notes
         };
         const result = await transactionFacade.addTransaction(
-            Number(req.params.id),
+            Number(String(reqDate.year) + String(reqDate.month)),
             transaction
         );
 
