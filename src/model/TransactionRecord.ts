@@ -1,4 +1,5 @@
 export interface TransactionRecord {
+    entry: number;
     date: TransactionDate;
     category: string;
     amount: number;

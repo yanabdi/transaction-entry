@@ -2,11 +2,14 @@
   "type": "module",
   "devDependencies": {
     "@types/express": "^5.0.6",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
   },
   "scripts": {
     "build": "npx tsc",
-    "start": "node ./dist/app.js"
+    "start": "node ./dist/app.js",
+    "test": "vitest",
+    "test:run": "vitest run"
   },
   "dependencies": {
     "express": "^5.2.1"
