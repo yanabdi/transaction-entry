@@ -13,6 +13,7 @@ app.listen(PORT, () => {
 });
 
 //add transactions
+//this is the routing for it, not the function. it can't be seen through user interface as of yet.
 app.post("/transactions/:id", async (req, res) => {
     try {
         const transaction: TransactionRecord = {
