@@ -8,8 +8,7 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node ./dist/app.js",
-    "test": "vitest",
-    "test:run": "vitest run"
+    "test": "vitest run"
   },
   "dependencies": {
     "express": "^5.2.1"
