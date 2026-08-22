@@ -1,16 +1,17 @@
 {
-	"compilerOptions": {
-        "rootDir": "src",
-		"outDir": "dist",
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
-        "target": "ES2022",
-        "esModuleInterop": true,
-		"noImplicitAny": true,
-		"removeComments": true,
-		"preserveConstEnums": true,
-		"sourceMap": true
-	},
-	"include": ["src/**/*.ts", "src/controller/TransactionFacade.js"],
-	"exclude": ["node_modules", "test"]
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022",
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "test"]
 }
