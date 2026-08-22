@@ -1,190 +1,119 @@
-import {beforeAll, beforeEach, it, describe, expect, afterAll, afterEach} from "vitest";
-import { TransactionRecord } from "../src/model/TransactionRecord.ts";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { TransactionFacade } from "../src/controller/TransactionFacade.ts";
+import type { TransactionRecord } from "../src/model/TransactionRecord.ts";
+import type { TransactionRepository } from "../src/repository/TransactionRepository.ts";
+
+vi.mock("../src/repository/TransactionRepository.js", () => ({
+  TransactionRepository: class TransactionRepository {}
+}));
+
+type NewTransaction = Omit<TransactionRecord, "id">;
 
 describe("TransactionFacade", () => {
-	let transactionOctA: TransactionRecord;
-	let transactionOctB: TransactionRecord;
-	let transactionNov: TransactionRecord;
-	let facade: TransactionFacade;
+  const newTransaction: NewTransaction = {
+    date: "2003-10-12",
+    category: "Food",
+    amountCents: 2000,
+    name: "sushi w/ friends",
+    vendor: "Itosugi Sushi",
+    description: "",
+    notes: ""
+  };
 
-	beforeAll(() => {
-		transactionOctA = {
-			entry: 1, 
-			date: 
-			{
-				day: 12, 
-				month: 10, 
-				year: 2003
-			}, 
-			category: "Food", 
-			amount: 20, 
-			name: "sushi w/ friends", 
-			vendor: "Itosugi Sushi", 
-			desc: "", 
-			notes: ""
-		};
+  const savedTransaction: TransactionRecord = {
+    id: "transaction-1",
+    ...newTransaction
+  };
 
-		transactionOctB = {
-			entry: 2, 
-			date: 
-			{
-				day: 15, 
-				month: 10, 
-				year: 2003
-			}, 
-			category: "Misc.", 
-			amount: 20, 
-			name: "", 
-			vendor: "Popular", 
-			desc: "", 
-			notes: ""
-		};
+  let repository: {
+    create: ReturnType<typeof vi.fn>;
+    findByMonth: ReturnType<typeof vi.fn>;
+    remove: ReturnType<typeof vi.fn>;
+  };
+  let facade: TransactionFacade;
 
-		transactionNov = {
-			entry: 1, 
-			date: 
-			{
-				day: 12, 
-				month: 11, 
-				year: 2003
-			}, 
-			category: "Food", 
-			amount: 20, 
-			name: "subway sandwich", 
-			vendor: "Subway", 
-			desc: "", 
-			notes: ""
-		};
-	});
+  beforeEach(() => {
+    repository = {
+      create: vi.fn(),
+      findByMonth: vi.fn(),
+      remove: vi.fn()
+    };
 
-    describe("addTransaction", () => {
-		let result: Promise<TransactionRecord> | undefined;
+    facade = new TransactionFacade(
+      repository as unknown as TransactionRepository
+    );
+  });
 
-		beforeEach(() => {
-			facade = new TransactionFacade();
-			result = undefined;
-		}); 
+  describe("addTransaction", () => {
+    it("creates a transaction through the repository", async () => {
+      repository.create.mockResolvedValue(savedTransaction);
 
-		afterEach(() => {
-			expect(result).toBeInstanceOf(Promise<TransactionRecord>);
-		});
-		
-		it("should create a new array before adding the first transaction to a month", () => {
-			let map = facade.listMap();
-			expect(map.size).toEqual(0);
+      const result = await facade.addTransaction(newTransaction);
 
-			result = facade.addTransaction(200310, transactionOctA);
-			map = facade.listMap();
-			expect(map.size).toEqual(1);
+      expect(repository.create).toHaveBeenCalledOnce();
+      expect(repository.create).toHaveBeenCalledWith(newTransaction);
+      expect(result).toEqual(savedTransaction);
+    });
 
-			expect(map.has(200310)).toBe(true);
+    it("propagates repository errors", async () => {
+      repository.create.mockRejectedValue(new Error("Database unavailable"));
 
-			let month = map.get(200310);
-			expect(month).toBeDefined();
-			expect(month).toBeInstanceOf(Array);
-			expect(month).toHaveLength(1);
-			expect(month?.[0]).toEqual(transactionOctA);
-		});
+      await expect(facade.addTransaction(newTransaction)).rejects.toThrow(
+        "Database unavailable"
+      );
+    });
+  });
 
-		it("should create a new array in a different map key if it has a different month", () => {
-			facade.addTransaction(200310, transactionOctA);
-			result = facade.addTransaction(200311, transactionNov);
+  describe("listTransactions", () => {
+    it("retrieves transactions for the requested year and month", async () => {
+      repository.findByMonth.mockResolvedValue([savedTransaction]);
 
-			let map = facade.listMap();
-			expect(map.size).toEqual(2);
-			expect(map.has(200310)).toBe(true);
-			expect(map.has(200311)).toBe(true);
+      const result = await facade.listTransactions(2003, 10);
 
-			let oct = map.get(200310);
-			expect(oct).toBeDefined();
-			expect(oct).toBeInstanceOf(Array);
-			expect(oct).toHaveLength(1);
-			expect(oct?.[0]).toEqual(transactionOctA);
+      expect(repository.findByMonth).toHaveBeenCalledOnce();
+      expect(repository.findByMonth).toHaveBeenCalledWith(2003, 10);
+      expect(result).toEqual([savedTransaction]);
+    });
 
-			let nov = map.get(200311);
-			expect(nov).toBeDefined();
-			expect(nov).toBeInstanceOf(Array);
-			expect(nov).toHaveLength(1);
-			expect(nov?.[0]).toEqual(transactionNov);
-		});
+    it("returns an empty array when the month has no transactions", async () => {
+      repository.findByMonth.mockResolvedValue([]);
 
-		it("should add to an existing array if it has a different day but not month", () => {
-			facade.addTransaction(200310, transactionOctA);
-			result = facade.addTransaction(200310, transactionOctB);
+      const result = await facade.listTransactions(2003, 11);
 
-			let map = facade.listMap();
-			expect(map.size).toEqual(1);
-			expect(map.has(200310)).toBe(true);
+      expect(result).toEqual([]);
+    });
 
-			let oct = map.get(200310);
-			expect(oct).toBeDefined();
-			expect(oct).toBeInstanceOf(Array);
-			expect(oct).toHaveLength(2);
-			expect(oct?.[0]).toEqual(transactionOctA);
-		});
+    it("propagates repository errors", async () => {
+      repository.findByMonth.mockRejectedValue(
+        new Error("Unable to list transactions")
+      );
 
-		it("should allow duplicate transactions to be added", () => {
-			facade.addTransaction(200310, transactionOctA);
-			result = facade.addTransaction(200310, transactionOctA);
+      await expect(facade.listTransactions(2003, 10)).rejects.toThrow(
+        "Unable to list transactions"
+      );
+    });
+  });
 
-			let map = facade.listMap();
-			expect(map.size).toEqual(1);
-			expect(map.has(200310)).toBe(true);
+  describe("removeTransaction", () => {
+    it("removes a transaction by its unique ID", async () => {
+      repository.remove.mockResolvedValue(undefined);
 
-			let oct = map.get(200310);
-			expect(oct).toBeDefined();
-			expect(oct).toBeInstanceOf(Array);
-			expect(oct).toHaveLength(2);
-			expect(oct?.[0]).toEqual(transactionOctA);
-			expect(oct?.[1]).toEqual(transactionOctA);
-		});
-	});
+      await expect(
+        facade.removeTransaction(savedTransaction.id)
+      ).resolves.toBeUndefined();
 
-	describe("removeTransaction", () => {
-		let result: Promise<String> | undefined;
+      expect(repository.remove).toHaveBeenCalledOnce();
+      expect(repository.remove).toHaveBeenCalledWith(savedTransaction.id);
+    });
 
-		beforeEach(async () => {
-			facade = new TransactionFacade();
-			await facade.addTransaction(200310, transactionOctA);
-			result = undefined;
-		});
+    it("propagates repository errors", async () => {
+      repository.remove.mockRejectedValue(
+        new Error("Unable to delete transaction")
+      );
 
-		it("should throw an error if the transaction month does not exist", async () => {
-			await expect(facade.removeTransaction(200311, 10)).rejects.toThrow("Month not found.");
-		});
-
-		it("should successfully remove an existing transaction", async () => {
-			const result = await facade.removeTransaction(200310, 12);
-			console.log(result);
-			expect(result).toBeDefined();
-			expect(result).toEqual("Transaction day: 12 deleted");
-		});
-
-		it("should throw an error if there are no transactions in a month", async () => {
-			await facade.removeTransaction(200310, 12);
-			await expect(facade.removeTransaction(200310, 12)).rejects.toThrow("No transactions found for this month.");
-		}); 
-
-		it("should return an unsuccessful deletion message when transaction day doesn't exist", async () => {
-			const result = await facade.removeTransaction(200310, 15);
-			expect(result).toBeDefined();
-			expect(result).toEqual("Unsuccessful deletion. Transaction day: 15 not found.");
-		});
-	});
-
-	describe("listTransactions", () => {
-		let result: any;
-
-		beforeEach(() => {
-			facade = new TransactionFacade();
-			result = undefined;
-		});
-
-		it("should return a 2D array of the transaction map", () => {
-				result = facade.listTransactions();
-				expect(result).toBeDefined();
-				expect(result).toBeInstanceOf(Array);
-		});
-	});
+      await expect(
+        facade.removeTransaction(savedTransaction.id)
+      ).rejects.toThrow("Unable to delete transaction");
+    });
+  });
 });
