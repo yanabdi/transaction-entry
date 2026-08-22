@@ -1,16 +1,15 @@
 export interface TransactionRecord {
-    entry: number;
-    date: TransactionDate;
+    id: string;
+    date: string;
     category: string;
-    amount: number;
+    amountCents: number;
     name: string;
     vendor: string; 
-    desc: string;
+    description: string;
     notes: string;
 }
 
-interface TransactionDate {
-    day: number;
+export interface TransactionMonth {
     month: number;
-    year: number;
+    transactions: TransactionRecord[];
 }
